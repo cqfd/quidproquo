@@ -31,6 +31,7 @@ pub mod quidproquo {
                 anchor_spl::token::Transfer {
                     from: ctx.accounts.offer_makers_maker_tokens.to_account_info(),
                     to: ctx.accounts.escrowed_maker_tokens.to_account_info(),
+                    // The offer_maker had to sign from the client
                     authority: ctx.accounts.offer_maker.to_account_info(),
                 },
             ),
@@ -51,6 +52,7 @@ pub mod quidproquo {
                     // that while deriving Accounts for the Accept struct.
                     from: ctx.accounts.offer_takers_taker_tokens.to_account_info(),
                     to: ctx.accounts.offer_makers_taker_tokens.to_account_info(),
+                    // The offer_taker had to sign from the client
                     authority: ctx.accounts.offer_taker.to_account_info(),
                 },
             ),
@@ -65,6 +67,9 @@ pub mod quidproquo {
                 anchor_spl::token::Transfer {
                     from: ctx.accounts.escrowed_maker_tokens.to_account_info(),
                     to: ctx.accounts.offer_takers_maker_tokens.to_account_info(),
+                    // Cute trick: the escrowed_maker_tokens is its own
+                    // authority/owner (and a PDA, so our program can sign for
+                    // it just below)
                     authority: ctx.accounts.escrowed_maker_tokens.to_account_info(),
                 },
                 &[&[
@@ -99,6 +104,9 @@ pub mod quidproquo {
                 anchor_spl::token::Transfer {
                     from: ctx.accounts.escrowed_maker_tokens.to_account_info(),
                     to: ctx.accounts.offer_makers_maker_tokens.to_account_info(),
+                    // Cute trick: the escrowed_maker_tokens is its own
+                    // authority/owner (and a PDA, so our program can sign for
+                    // it just below)
                     authority: ctx.accounts.escrowed_maker_tokens.to_account_info(),
                 },
                 &[&[

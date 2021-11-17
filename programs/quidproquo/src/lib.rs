@@ -1,5 +1,8 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{Mint, Token, TokenAccount};
+use anchor_spl::{
+    associated_token::AssociatedToken,
+    token::{Mint, Token, TokenAccount},
+};
 
 declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 
@@ -206,14 +209,10 @@ pub struct Accept<'info> {
 
     #[account(
         mut,
-        // make sure we send the offer taker's tokens to the offer maker
-        constraint = offer_makers_taker_tokens.owner == offer.maker,
-        // and make sure the offer taker's tokens are of the right type
-        // this check is redundant with the check below, but maybe good
-        // for clarity
-        constraint = offer_makers_taker_tokens.mint == offer.taker_mint
+        associated_token::mint = taker_mint,
+        associated_token::authority = offer_maker,
     )]
-    pub offer_makers_taker_tokens: Account<'info, TokenAccount>,
+    pub offer_makers_taker_tokens: Box<Account<'info, TokenAccount>>,
 
     #[account(
         mut,
@@ -224,6 +223,9 @@ pub struct Accept<'info> {
     pub offer_takers_taker_tokens: Account<'info, TokenAccount>,
     #[account(mut)]
     pub offer_takers_maker_tokens: Account<'info, TokenAccount>,
+
+    #[account(address = offer.taker_mint)]
+    pub taker_mint: Account<'info, Mint>,
 
     pub token_program: Program<'info, Token>,
 }
@@ -247,6 +249,7 @@ pub struct Cancel<'info> {
     #[account(mut)]
     // this is where to send the previously-escrowed tokens to
     pub offer_makers_maker_tokens: Account<'info, TokenAccount>,
+
     #[account(
         mut,
         seeds = [offer.key().as_ref()],

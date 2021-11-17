@@ -112,7 +112,8 @@ describe('escrow', () => {
         offerTaker: offerTaker.publicKey,
         offerTakersMakerTokens: offerTakersMakerTokens,
         offerTakersTakerTokens: offerTakersTakerTokens,
-        tokenProgram: spl.TOKEN_PROGRAM_ID
+        takerMint: takerMint.publicKey,
+        tokenProgram: spl.TOKEN_PROGRAM_ID,
       },
       signers: [offerTaker]
     });
@@ -187,7 +188,8 @@ describe('escrow', () => {
           offerTaker: offerTaker.publicKey,
           offerTakersMakerTokens: offerTakersMakerTokens,
           offerTakersTakerTokens: offerTakersTakerTokens,
-          tokenProgram: spl.TOKEN_PROGRAM_ID
+          takerMint: takerMint.publicKey,
+          tokenProgram: spl.TOKEN_PROGRAM_ID,
         },
         signers: [offerTaker]
       });
@@ -239,7 +241,8 @@ describe('escrow', () => {
           offerTaker: offerTaker.publicKey,
           offerTakersMakerTokens: offerTakersMakerTokens,
           offerTakersTakerTokens: offerTakersRandomOtherTokens,
-          tokenProgram: spl.TOKEN_PROGRAM_ID
+          takerMint: takerMint.publicKey,
+          tokenProgram: spl.TOKEN_PROGRAM_ID,
         },
         signers: [offerTaker]
       });
@@ -296,7 +299,8 @@ describe('escrow', () => {
           offerTaker: offerTaker.publicKey,
           offerTakersMakerTokens: offerTakersMakerTokens,
           offerTakersTakerTokens: offerTakersTakerTokens,
-          tokenProgram: spl.TOKEN_PROGRAM_ID
+          takerMint: takerMint.publicKey,
+          tokenProgram: spl.TOKEN_PROGRAM_ID,
         },
         signers: [offerTaker]
       });
@@ -347,19 +351,19 @@ describe('escrow', () => {
           offer: offer.publicKey,
           escrowedMakerTokens: escrowedMakerTokens,
           offerMaker: program.provider.wallet.publicKey,
-          // hacker!!
           offerMakersTakerTokens: hackersTakerTokens,
           offerTaker: offerTaker.publicKey,
           offerTakersMakerTokens: offerTakersMakerTokens,
           offerTakersTakerTokens: offerTakersTakerTokens,
-          tokenProgram: spl.TOKEN_PROGRAM_ID
+          takerMint: takerMint.publicKey,
+          tokenProgram: spl.TOKEN_PROGRAM_ID,
         },
         signers: [offerTaker]
       });
       assert.fail("Shouldn't have been able to accept an offer with a token account that doesn't belong to the maker");
     } catch (e) {
-      // Should trigger a constraint
-      assert.equal(0x8f, e.code);
+      // Should trigger an associated token constraint
+      assert.equal(0x95, e.code);
     }
 
     // The underlying offer account got closed when the offer got cancelled.

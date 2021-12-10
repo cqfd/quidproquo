@@ -201,7 +201,11 @@ pub struct Accept<'info> {
     )]
     pub offer: Account<'info, Offer>,
 
-    #[account(mut)]
+    #[account(
+        mut,
+        seeds = [offer.key().as_ref()],
+        bump = offer.escrowed_maker_tokens_bump
+    )]
     pub escrowed_maker_tokens: Account<'info, TokenAccount>,
 
     pub offer_maker: AccountInfo<'info>,
